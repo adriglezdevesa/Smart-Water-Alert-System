@@ -5,8 +5,10 @@ import os
 def inicializar_bd():
     # Ruta donde se guardará el archivo de la base de datos
     # Sube un nivel desde 'src' y entra en 'datos'
-    ruta_bd = os.path.join(os.path.dirname(__file__), '..', 'datos', 'agua_concello.db')
-    
+    carpeta_datos = os.path.join(os.path.dirname(__file__), '..', 'datos')
+    os.makedirs(carpeta_datos, exist_ok=True)  # La crea si no existe (p. ej. en un clon recién descargado)
+    ruta_bd = os.path.join(carpeta_datos, 'agua_concello.db')
+
     # Nos conectamos (si el archivo no existe, SQLite lo crea automáticamente)
     conexion = sqlite3.connect(ruta_bd)
     cursor = conexion.cursor()

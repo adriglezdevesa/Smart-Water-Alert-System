@@ -1,3 +1,3 @@
 customtkinter
-fpdf
+fpdf2
 matplotlib

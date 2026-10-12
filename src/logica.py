@@ -23,8 +23,16 @@ def obtener_ruta_base():
         return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 def conectar_bd():
-    ruta_bd = os.path.join(obtener_ruta_base(), 'datos', 'agua_concello.db')
+    carpeta_datos = os.path.join(obtener_ruta_base(), 'datos')
+    os.makedirs(carpeta_datos, exist_ok=True)  # La crea si no existe (p. ej. en un clon recién descargado)
+    ruta_bd = os.path.join(carpeta_datos, 'agua_concello.db')
     return sqlite3.connect(ruta_bd)
+
+def carpeta_informes():
+    # Carpeta donde se guardan los PDF y las gráficas; se crea si no existe
+    ruta = os.path.join(obtener_ruta_base(), 'informes')
+    os.makedirs(ruta, exist_ok=True)
+    return ruta
 
 def insertar_datos_prueba():
     conexion = conectar_bd()
@@ -36,8 +44,8 @@ def insertar_datos_prueba():
     # --- GENERADOR DE 1.000 CONTADORES ---
     vecinos = []
     
-    # Bucle para generar 1000 casas
-    for i in range(1, 1000):
+    # Bucle para generar 1000 casas (de C-0001 a C-1000)
+    for i in range(1, 1001):
         id_cont = f'C-{i:04d}'  # Quedará como C-0001, C-0002...
         tipo = 'CASA'
         direccion = f'Vivenda {i}, Localidad de Prueba'
@@ -153,7 +161,7 @@ def crear_grafica_contador(id_contador, titular):
         plt.ylim(top=5.0)
 
     plt.tight_layout() 
-    ruta_imagen = os.path.join(obtener_ruta_base(), 'informes', f'grafica_{id_contador}.png')
+    ruta_imagen = os.path.join(carpeta_informes(), f'grafica_{id_contador}.png')
     plt.savefig(ruta_imagen)
     plt.close() 
     return ruta_imagen
@@ -242,7 +250,7 @@ def generar_pdf_alertas(alertas):
             pdf.image(ruta_grafica, x=20, w=170)
             imagenes_a_borrar.append(ruta_grafica)
             
-    ruta_informe = os.path.join(obtener_ruta_base(), 'informes', 'informe_alertas_graficas.pdf')
+    ruta_informe = os.path.join(carpeta_informes(), 'informe_alertas_graficas.pdf')
     pdf.output(ruta_informe)
     
     for ruta_img in imagenes_a_borrar:
